@@ -3,6 +3,24 @@
 // Nome do site
 var siteName = 'ProjetoDois';
 
+
+//conexão com Firabase
+const firebaseConfig = {
+    apiKey: "AIzaSyBp9dLRidnCIDTdKXVxcZpl79w3r9ONPqw",
+    authDomain: "projeto01-fc5fb.firebaseapp.com",
+    projectId: "projeto01-fc5fb",
+    storageBucket: "projeto01-fc5fb.appspot.com",
+    messagingSenderId: "460620268422",
+    appId: "1:460620268422:web:a92248255aaecd967ea207"
+  };
+  
+  // Inicialize Firebase
+  firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+//armazenar os dados do user
+var user;
+
 // Quando documento estiver pronto, executa JavaScript
 $(document).ready(runApp);
 
