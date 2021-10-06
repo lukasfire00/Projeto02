@@ -1,63 +1,51 @@
 /***** Configurações do aplicativo *****/
+var siteName = 'ProjetoDois'; // Define nome do site
+var user; // Armazenará dados do usuário logado
 
-// Nome do site
-var siteName = 'ProjetoDois';
+$(document).ready(runApp); // Quando documento estiver pronto, executa aplicativo
 
-
-//conexão com Firabase
-const firebaseConfig = {
-    apiKey: "AIzaSyBp9dLRidnCIDTdKXVxcZpl79w3r9ONPqw",
-    authDomain: "projeto01-fc5fb.firebaseapp.com",
-    projectId: "projeto01-fc5fb",
-    storageBucket: "projeto01-fc5fb.appspot.com",
-    messagingSenderId: "460620268422",
-    appId: "1:460620268422:web:a92248255aaecd967ea207"
-  };
-  
-  // Inicialize Firebase
-  firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-//armazenar os dados do user
-var user;
-
-// Quando documento estiver pronto, executa JavaScript
-$(document).ready(runApp);
-
-/** Aplicativo principal */
+/***** Aplicativo principal *****/
 function runApp() {
 
-    // Carrega página inicial
-    loadPage('home');
+    loadPage('home'); // Carrega página inicial
+    $(document).on('click', '#login', login); // Monitora cliques no login
+    $(document).on('click', 'a', routerLink); // Monitora cliques nos links
+    $(document).on('click', '.modal', closeModal); // Monitora cliques no modal
 
-    // Monitora cliques nos links
-    $(document).on('click', 'a', routerLink);
-
+    // Valida usuário logado
+    firebase.auth().onAuthStateChanged((userData) => {
+        if (userData) {
+            user = userData
+            console.log(user);
+        } else {
+            console.log('Não logado');
+        }
+    });
 }
 
 // Carrega uma página completa
 function loadPage(pagePath, pageName = '') {
 
-    // Variáveis da função
-    var path, page = {};
-
-    // Divide a rota em partes
-    var parts = pagePath.split('/');
+    var page = {}; // Armazena dados da rota
+    var parts = pagePath.split('?'); // Divide a rota em partes
 
     // Gera rota para HTML
-    if (parts.length == 1)
-        page.html = `/pages/${parts[0]}/${parts[0]}.html`;
-    else
-        page.html = `/pages/${parts[0]}/${parts[0]}.html?${parts[1]}`;
+    if (parts.length == 1) // Se é uma rota simples
+        page.url = `/${parts[0]}`; // Define endereço da página
+    else // Se a rota contém variáveis após '?
+        page.url = `/${parts[0]}?${parts[1]}`; // Define endereço da página
 
-    // Gera rotas para CSS e JS
+    // Gera rotas para HTML, CSS e JS
+    page.html = `/pages/${parts[0]}/${parts[0]}.html`;
     page.css = `/pages/${parts[0]}/${parts[0]}.css`;
     page.js = `/pages/${parts[0]}/${parts[0]}.js`;
 
     // Carrega componentes da página
-    $('#pageCSS').load(page.css, () => {
-        $('#pageHTML').load(page.html, () => {
-            $.getScript(page.js);
+    $('#pageCSS').load(page.css, () => { // Carrega CSS
+        $('#pageHTML').load(page.html, () => { // Carrega HTML
+            $.getScript(page.js, () => { // Carrega e executa JavaScript
+                window.history.replaceState('', '', page.url); // Atualiza URL da aplicação
+            });
         });
     });
 }
@@ -66,18 +54,24 @@ function loadPage(pagePath, pageName = '') {
 function routerLink() {
 
     // Obtém atributos do link
-    var href = $(this).attr('href');
-    var target = $(this).attr('target');
+    var href = $(this).attr('href'); // Obtém valor de 'href' do link clicado
+    var target = $(this).attr('target'); // Obtém valor de 'target' do link clicado
+
+    // Bloqueia link de login
+    if (href == 'login') return false
 
     // Resolver âncoras
-    if (href.substr(0, 1) == '#') {
-        return true;
-    }
+    if (href.substr(0, 1) == '#') // Se o primeiro caractere é '#', é uma âncora
+        return true; // Então, devolve controle para o HTML
 
-    // Resolver links externos
-    if (target == '_blank' || href.substr(0, 7) == 'http://' || href.substr(0, 8) == 'https://') {
-        return true;
-    }
+    // É um link externo...
+    if (
+        target == '_blank' // ... se 'target="_blank"'
+        || // ou
+        href.substr(0, 7) == 'http://' // ou, se começa com 'http://'
+        || // ou
+        href.substr(0, 8) == 'https://' // ou, se começa com 'https://'
+    ) return true; // Então, devolve controle para o HTML
 
     // Resolver links internos (rotas)
     loadPage(href);
@@ -86,17 +80,53 @@ function routerLink() {
     return false;
 }
 
-// Processa título da página <title>
-function setTitle(pageTitle) {
+// Processa título da página. Tag <title>...</title>
+function setTitle(pageTitle = '') {
+    var title; // Inicializa variável
+    if (pageTitle == '') title = siteName; // Se não definiu um título, usa o nome do app
+    else title = `${siteName} .:. ${pageTitle}`; // Senão, usa este formato
+    $('title').text(title); // Escreve na tag <title>
+}
 
-    // Inicializa variável
-    var title;
+// Formata uma 'system date' (YYYY-MM-DD HH:II:SS) para 'Br date' (DD/MM/YYYY HH:II:SS)
+function getBrDate(dateString) {
+    var p1 = dateString.split(' '); // Separa data e hora
+    var p2 = p1[0].split('-'); // Separa partes da data
+    return `${p2[2]}/${p2[1]}/${p2[0]} ${p1[1]}`; // Remonta partes da data e hora
+}
 
-    if (pageTitle == '')
-        title = siteName;
-    else
-        title = `${siteName} .:. ${pageTitle}`;
+// Gera a data atual em formato system date "YYYY-MM-DD HH:II:SS"
+function getSystemDate() {
+    var yourDate = new Date(); // Obtém a data atual do navegador
+    var offset = yourDate.getTimezoneOffset(); // Obtém o fusohorário
+    yourDate = new Date(yourDate.getTime() - (offset * 60 * 1000)); // Ajusta o fusohorário
+    returnDate = yourDate.toISOString().split('T'); // Separa data da hora
+    returnTime = returnDate[1].split('.'); // Separa partes da data
+    return `${returnDate[0]} ${returnTime[0]}`; // Formata data como system date
+}
 
-    // Escreve na tag <title>
-    $('title').text(title);
+// Faz login de usuário
+function login() {
+
+    var provider = new firebase.auth.GoogleAuthProvider();
+
+    firebase.auth()
+        .signInWithPopup(provider)
+        .then((result) => {
+            var modalText = `Olá ${result.user.displayName}!<br><br>Você já pode usar nosso conteúdo restrito...`;
+            $('#modalLogin .modal-title').html('Bem-vinda(o)!');
+            $('#modalLogin .modal-text').html(modalText);
+            $('#modalLogin').show('fast');
+            setTimeout(() => {
+                $('#modalLogin').hide('fast');
+            }, 15000);
+        }).catch((error) => {
+            console.error(`Ocorreram erros ao fazer login: ${error}`);
+        });
+}
+
+// Fecha modal
+function closeModal() {
+    modalName = $(this).parent().attr('id');
+    $(`#${modalName}`).hide('fast');
 }
