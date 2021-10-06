@@ -1,18 +1,19 @@
-.article {
+.card {
   margin-bottom: 0.5rem;
   cursor: pointer;
-  background: white;  
+  background: white;
+  border-radius: 0.35rem;
 }
 
-.article:last-child {
+.card:last-child {
   margin-bottom: 0;
 }
 
-.article:hover {
+.card:hover {
   background: rgba(0, 0, 0, 0.1);
 }
 
-.article-img {
+.card-img {
   height: 200px;
   background-position: center;
   background-repeat: no-repeat;
@@ -22,26 +23,26 @@
   border-radius: 0.3rem 0.3rem 0 0;
 }
 
-.article-content {
+.card-content {
   padding: 0 0.5rem 0.5rem 0.5rem;
   border: 1px solid grey;
   border-top: none;
   border-radius: 0 0 0.3rem 0.3rem;
 }
 
-.article h3 {
+.card h3 {
   margin: 0;
   padding: 0.5rem 0;
   font-size: 1.2rem;
 }
 
 @media (min-width: 576px) {
-  .article {
+  .card {
     display: grid;
     grid-template-columns: 80px auto;
   }
 
-  .article-img {
+  .card-img {
     height: auto;
     min-height: 80px;
     border: 1px solid grey;
@@ -49,7 +50,7 @@
     border-radius: 0.3rem 0 0 0.3rem;
   }
 
-  .article-content {
+  .card-content {
     flex-grow: 1;
     border: 1px solid grey;
     border-left: none;

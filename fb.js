@@ -1,11 +1,11 @@
 // Conexão com Firebase
 const firebaseConfig = {
-    apiKey: "AIzaSyBfWBlHOfE7N3J6K_swDzi2Zz6nSWfjd_4",
-    authDomain: "projetoum-fe477.firebaseapp.com",
-    projectId: "projetoum-fe477",
-    storageBucket: "projetoum-fe477.appspot.com",
-    messagingSenderId: "746077889552",
-    appId: "1:746077889552:web:f6c520f9f6e1983b849695"
+   apiKey: "AIzaSyBp9dLRidnCIDTdKXVxcZpl79w3r9ONPqw",
+  authDomain: "projeto01-fc5fb.firebaseapp.com",
+  projectId: "projeto01-fc5fb",
+  storageBucket: "projeto01-fc5fb.appspot.com",
+  messagingSenderId: "460620268422",
+  appId: "1:460620268422:web:a92248255aaecd967ea207"
 };
 
 // Initializa Firebase
