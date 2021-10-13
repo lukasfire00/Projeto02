@@ -61,7 +61,7 @@ function runPage() {
 
                         // Monitora envio do formulário
                         // (ERRO) $(document).on('submit', '#cForm', sendComment);
-                        // $('#commentSend').click(sendComment);
+                        // (1ª solução) $('#commentSend').click(sendComment);
                         $('#cForm').submit(sendComment);
 
                     } else {
